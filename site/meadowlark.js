@@ -1,7 +1,13 @@
 
 /*  ---------------------- IMPORTS ----------------------------   */
 var express = require('express');
-var handlebars = require('express-handlebars').create({defaultLayout: 'main'});
+var handlebars = require('express-handlebars').create({defaultLayout: 'main', 
+helpers: {
+    section: function(name, options){
+        if(!this._sections){this._sections = {}};
+        this._sections[name] = options.fn(this);
+        return null;
+    }}});
 var fortune = require('./lib/fortune.js');
 
 
@@ -28,6 +34,14 @@ app.get('/' , function(req, res){
 app.get('/about' , function(req, res){
    res.render('about', {fortune: fortune.getFortune(), pageTestScript: '/qa/tests-about.js'});
 })
+
+app.get('/tours/hood-river' , function(req, res){
+    res.render('tours/hood-river');
+});
+
+app.get('/tours/request-group-rate' , function(req, res){
+    res.render('tours/request-group-rate');
+});
 
 app.use(function(req, res){
     res.status(404);
