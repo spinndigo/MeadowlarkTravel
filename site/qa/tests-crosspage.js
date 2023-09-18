@@ -3,14 +3,21 @@ var assert = require('chai').assert;
 
 var browser;
 
+Browser.localhost('localhost', 3000);
+
 suite('Cross-Page Tests' , function(){
     setup(function(){
         browser = new Browser();
+        
     });
     
     test('requesting a group rate from the hood river tour page should populate referrer field' , function(done){
-        var referrer = 'http://localhost:3000/tours/hood-river';
+        
+        var referrer = '/tours/hood-river';
         browser.visit(referrer, function(){
+            console.log(browser.location.pathname);
+            console.log( 'after initial visit:', browser.body);
+            console.log(browser.errors);
             browser.clickLink('.requestGroupRate', function(){
                 assert(browser.field('referrer').value === referrer);
                 done();
