@@ -35,6 +35,13 @@ app.get('/about' , function(req, res){
    res.render('about', {fortune: fortune.getFortune(), pageTestScript: '/qa/tests-about.js'});
 });
 
+app.get('/headers' , function(req, res){
+    res.set('Content-Type' , 'text/plain');
+    var s = '';
+    for(var name in req.headers) s += name + ': ' + req.headers[name] + '\n';
+    res.send(s);
+})
+
 app.get('/tours/hood-river' , function(req, res){
     res.render('tours/hood-river');
 });
