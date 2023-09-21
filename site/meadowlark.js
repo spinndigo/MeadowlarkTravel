@@ -9,6 +9,7 @@ helpers: {
         return null;
     }}});
 var fortune = require('./lib/fortune.js');
+const { getWeatherData } = require('./lib/dummyWeather.js');
 
 
 /*  ---------------------- APP ----------------------------   */
@@ -26,6 +27,12 @@ app.use(function(req,res,next){
     res.locals.showTests = app.get('env') !== 'production' && req.query.test === '1';
     next();
 });
+
+app.use(function(req, res, next){
+    if(!res.locals.partials) res.locals.partials = {};
+    res.locals.partials.weatherContext = getWeatherData();
+    next();
+})
 
 app.get('/' , function(req, res){
     res.render('home');
