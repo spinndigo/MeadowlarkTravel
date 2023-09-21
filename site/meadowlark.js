@@ -47,7 +47,20 @@ app.get('/headers' , function(req, res){
     var s = '';
     for(var name in req.headers) s += name + ': ' + req.headers[name] + '\n';
     res.send(s);
-})
+});
+
+app.get('/nursery-rhyme', function(req, res){
+    res.render('nursery-rhyme');
+});
+
+app.get('/data/nursery-rhyme', function(req, res){
+    res.json({
+        animal: 'squirrel',
+        bodyPart: 'tail',
+        adjective: 'bushy',
+        noun: 'heck'
+    })
+});
 
 app.get('/tours/hood-river' , function(req, res){
     res.render('tours/hood-river');
