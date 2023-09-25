@@ -22,6 +22,7 @@ app.set('view engine' , 'handlebars');
 app.set('port' , process.env.PORT || 3000);
 
 app.use(express.static(__dirname + '/public'));
+app.use(require('body-parser').urlencoded({extended: true}));
 
 app.use(function(req,res,next){
     res.locals.showTests = app.get('env') !== 'production' && req.query.test === '1';
@@ -49,6 +50,10 @@ app.get('/headers' , function(req, res){
     res.send(s);
 });
 
+app.get('/newsletter', function(req, res){
+    res.render('newsletter' , {csrf: 'CSRF Token here'});
+});
+
 app.get('/nursery-rhyme', function(req, res){
     res.render('nursery-rhyme');
 });
@@ -68,6 +73,14 @@ app.get('/tours/hood-river' , function(req, res){
 
 app.get('/tours/request-group-rate' , function(req, res){
     res.render('tours/request-group-rate');
+});
+
+app.post('/process' , function(req,res){
+    console.log('Form from querystring: ' + req.query.form);
+    console.log('CSRF token from hidden form field: ' + req.body._csrf);
+    console.log('Name from visible form field: ' + req.body.name);
+    console.log('Email from visible form: ' + req.body.email);
+    res.redirect(303 , '/thank-you');
 });
 
 app.use(function(req, res){
