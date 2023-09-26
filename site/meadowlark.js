@@ -9,6 +9,7 @@ helpers: {
         return null;
     }}});
 var fortune = require('./lib/fortune.js');
+var formidable = require('formidable');
 const { getWeatherData } = require('./lib/dummyWeather.js');
 
 
@@ -43,6 +44,24 @@ app.get('/about' , function(req, res){
    res.render('about', {fortune: fortune.getFortune(), pageTestScript: '/qa/tests-about.js'});
 });
 
+app.get('/contest/vacation-photo', function (req, res) {
+    var now = new Date();
+    res.render('contest/vacation-photo', {
+        year: now.getFullYear(),
+        month: now.getMonth(),
+    })
+});
+
+app.post('/contest/vacation-photo/:year/:month', function (req, res) {
+    var form = new formidable.IncomingForm();
+    form.parse(req, function (err, fields, files) {
+        if (err) return res.redirect(303, '/error');
+        console.log('received fields: ', fields);
+        console.log('received files: ', files);
+        res.redirect(303, '/thank-you');
+    })
+})
+
 app.get('/headers' , function(req, res){
     res.set('Content-Type' , 'text/plain');
     var s = '';
@@ -67,6 +86,10 @@ app.get('/data/nursery-rhyme', function(req, res){
     })
 });
 
+app.get('/thank-you' , function(req, res){
+    res.render('thank-you');
+});
+
 app.get('/tours/hood-river' , function(req, res){
     res.render('tours/hood-river');
 });
@@ -76,11 +99,12 @@ app.get('/tours/request-group-rate' , function(req, res){
 });
 
 app.post('/process' , function(req,res){
-    console.log('Form from querystring: ' + req.query.form);
-    console.log('CSRF token from hidden form field: ' + req.body._csrf);
-    console.log('Name from visible form field: ' + req.body.name);
-    console.log('Email from visible form: ' + req.body.email);
-    res.redirect(303 , '/thank-you');
+    if (req.xhr || req.accepts(['json', 'html']) === 'json') {
+        res.send({ success: true });
+    }
+    else {
+        res.redirect(303, '/thank-you');
+    }
 });
 
 app.use(function(req, res){
