@@ -11,6 +11,7 @@ helpers: {
 var fortune = require('./lib/fortune.js');
 var formidable = require('formidable');
 const { getWeatherData } = require('./lib/dummyWeather.js');
+var credentials = require('./credentials.js');
 
 
 /*  ---------------------- APP ----------------------------   */
@@ -23,18 +24,30 @@ app.set('view engine' , 'handlebars');
 app.set('port' , process.env.PORT || 3000);
 
 app.use(express.static(__dirname + '/public'));
-app.use(require('body-parser').urlencoded({extended: true}));
+app.use(require('body-parser').urlencoded({ extended: true }));
+app.use(require('cookie-parser')(credentials.cookieSecret));
+app.use(require('express-session')({
+    resave: false,
+    saveUninitialized: false,
+    secret: credentials.cookieSecret
+}));
 
 app.use(function(req,res,next){
     res.locals.showTests = app.get('env') !== 'production' && req.query.test === '1';
     next();
 });
 
-app.use(function(req, res, next){
-    if(!res.locals.partials) res.locals.partials = {};
+app.use(function (req, res, next) {
+    if (!res.locals.partials) res.locals.partials = {};
     res.locals.partials.weatherContext = getWeatherData();
     next();
-})
+});
+
+app.use(function (req, res, next) {
+    res.locals.flash = req.session.flash;
+    delete req.session.flash;
+    next();
+});
 
 app.get('/' , function(req, res){
     res.render('home');
@@ -58,6 +71,11 @@ app.post('/contest/vacation-photo/:year/:month', function (req, res) {
         if (err) return res.redirect(303, '/error');
         console.log('received fields: ', fields);
         console.log('received files: ', files);
+         req.session.flash = {
+            type: 'success',
+            intro: 'thank you for your submission',
+            message: 'your photo is appreciated',
+        }
         res.redirect(303, '/thank-you');
     })
 })
@@ -103,6 +121,11 @@ app.post('/process' , function(req,res){
         res.send({ success: true });
     }
     else {
+        req.session.flash = {
+            type: 'success',
+            intro: 'thank you for your submission',
+            message: 'your contribution is appreciated',
+        }
         res.redirect(303, '/thank-you');
     }
 });

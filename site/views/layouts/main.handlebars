@@ -9,6 +9,15 @@
        {{{_sections.head}}}
     </head>
     <body>
+        {{#if flash}}
+            <div class="alert alert-dismissable alert-{{flash.type}}">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+                    &times;
+                </button>
+                <strong>{{flash.intro}}</strong> {{{flash.message}}}
+            </div>
+
+        {{/if}}
         <header><img src="/img/logo.png"/></header>
         {{{body}}}
         {{#if showTests}}
