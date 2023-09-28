@@ -11,6 +11,7 @@ helpers: {
 var fortune = require('./lib/fortune.js');
 var formidable = require('formidable');
 const { getWeatherData } = require('./lib/dummyWeather.js');
+var cartValidation = require('./lib/cartValidation.js');
 var credentials = require('./credentials.js');
 
 
@@ -48,6 +49,9 @@ app.use(function (req, res, next) {
     delete req.session.flash;
     next();
 });
+
+app.use(cartValidation.checkWaivers);
+app.use(cartValidation.checkGuestCounts);
 
 app.get('/' , function(req, res){
     res.render('home');
